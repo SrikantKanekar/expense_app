@@ -1,20 +1,19 @@
-import 'package:expense_app/model/transaction.dart';
-import 'package:expense_app/widgets/transaction_card.dart';
 import 'package:flutter/material.dart';
+
+import '../models/transaction.dart';
+import './transaction_item.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
-  final Function delete;
+  final Function deleteTx;
 
-  const TransactionList(this.transactions, this.delete, {Key? key})
-      : super(key: key);
+  const TransactionList(this.transactions, this.deleteTx);
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 450,
-      child: transactions.isEmpty
-          ? Column(
+    return transactions.isEmpty
+        ? LayoutBuilder(builder: (ctx, constraints) {
+            return Column(
               children: <Widget>[
                 Text(
                   'No transactions added yet!',
@@ -24,20 +23,22 @@ class TransactionList extends StatelessWidget {
                   height: 20,
                 ),
                 SizedBox(
-                  height: 200,
-                  child: Image.asset(
-                    'assets/images/waiting.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                    height: constraints.maxHeight * 0.6,
+                    child: Image.asset(
+                      'assets/images/waiting.png',
+                      fit: BoxFit.cover,
+                    )),
               ],
-            )
-          : ListView.builder(
-              itemBuilder: (context, index) {
-                return TransactionCard(transactions[index], delete);
-              },
-              itemCount: transactions.length,
-            ),
-    );
+            );
+          })
+        : ListView(
+            children: transactions
+                .map((tx) => TransactionItem(
+                      key: ValueKey(tx.id),
+                      transaction: tx,
+                      deleteTx: deleteTx,
+                    ))
+                .toList(),
+          );
   }
 }

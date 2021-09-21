@@ -1,12 +1,13 @@
-import 'package:expense_app/model/transaction.dart';
-import 'package:expense_app/widgets/chart_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import './chart_bar.dart';
+import '../models/transaction.dart';
 
 class Chart extends StatelessWidget {
   final List<Transaction> recentTransactions;
 
-  const Chart(this.recentTransactions, {Key? key}) : super(key: key);
+  const Chart(this.recentTransactions);
 
   List<Map<String, Object>> get groupedTransactionValues {
     return List.generate(7, (index) {
@@ -31,8 +32,9 @@ class Chart extends StatelessWidget {
   }
 
   double get totalSpending {
-    var amounts = groupedTransactionValues.map((e) => e['amount'] as double);
-    return amounts.fold(0.0, (previousValue, element) => previousValue + element);
+    return groupedTransactionValues.fold(0.0, (sum, item) {
+      return sum + (item['amount'] as double);
+    });
   }
 
   @override
@@ -41,7 +43,7 @@ class Chart extends StatelessWidget {
       elevation: 6,
       margin: const EdgeInsets.all(20),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: groupedTransactionValues.map((data) {
